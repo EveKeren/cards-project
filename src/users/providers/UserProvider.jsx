@@ -2,7 +2,7 @@ import { createContext, useContext, useEffect, useMemo, useState } from "react";
 import axios from "axios";
 import { getToken, getUser } from "../services/localStorageService";
 import { useSnack } from "../../providers/SnackbarProvider";
-const BASE = "https://monkfish-app-z9uza.ondigitalocean.app/bcard2";
+const BASE = "https://cards-server-oxw3.onrender.com";
 const UserContext = createContext();
 export default function UserProvider({ children }) {
   const [user, setUser] = useState(getUser());

@@ -8,7 +8,7 @@ import { useSearchParams, useNavigate } from "react-router-dom";
 import { getToken } from "../users/services/localStorageService";
 import CreateCardFav from "../cards/components/createCardFav.jsx";
 
-const BASE = "https://monkfish-app-z9uza.ondigitalocean.app/bcard2";
+const BASE = "https://cards-server-oxw3.onrender.com";
 const qNorm = (v) => {
   const s = (v || "").trim().toLowerCase();
   return s === "undefined" || s === "null" ? "" : s;
