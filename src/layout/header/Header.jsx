@@ -7,7 +7,7 @@ import {
   Typography,
 } from "@mui/material";
 import HeaderLink from "./HeaderLink";
-import Logo from "./Logo";
+import Logo from "./logo.jsx";
 import ROUTES from "../../routes/routesDict";
 import { useTheme } from "../../providers/CustomThemeProvider";
 import { useCurrentUser } from "../../users/providers/UserProvider";
@@ -15,6 +15,7 @@ import { useEffect, useMemo, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import { useSnack } from "../../providers/SnackbarProvider";
 import { removeToken } from "../../users/services/localStorageService";
+import { js } from "@eslint/js";
 
 function Header() {
   const { toggleMode, isDark } = useTheme();
