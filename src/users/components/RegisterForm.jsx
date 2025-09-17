@@ -1,164 +1,175 @@
 import { TextField } from "@mui/material";
+import { useNavigate } from "react-router-dom";
 import useForm from "../../hooks/useForm";
 import Form from "../../components/Form";
-import axios from "axios";
 import signupSchema from "../models/signupSchema";
 import initialSignupForm from "../helpers/initialForms/initialSignupForm";
 import normalizeUser from "../helpers/normalization/normalizeUser";
 import { useSnack } from "../../providers/SnackbarProvider";
-import { useNavigate } from "react-router-dom";
 import ROUTES from "../../routes/routesDict";
-function RegisterForm() {
+import { registerUser } from "./../services/usersApiService";
+
+export default function RegisterForm() {
   const snack = useSnack();
   const navigate = useNavigate();
-  const handleSignup = async (userDetails) => {
-    const userDetailsForServer = normalizeUser(userDetails);
+
+  const handleSignup = async (values) => {
     try {
-      await axios.post(
-        "https://monkfish-app-z9uza.ondigitalocean.app/bcard2/users",
-        userDetailsForServer
-      );
+      await registerUser(normalizeUser(values));
       snack("Account created! Please sign in.", "success");
       navigate(ROUTES.login, { replace: true });
-    } catch (error) {
-      const msg = error?.response?.data || "Registration failed";
-      snack(typeof msg === "string" ? msg : "Registration failed", "error");
+    } catch (e) {
+      snack(e.message || "Registration failed", "error");
     }
   };
-  const { formDetails, errors, handleChange, handleSubmit } = useForm(
-    initialSignupForm,
-    signupSchema,
-    handleSignup
-  );
+
+  const {
+    formDetails: f,
+    errors,
+    handleChange,
+    handleSubmit,
+  } = useForm(initialSignupForm, signupSchema, handleSignup);
+
+  const err = (k) => Boolean(errors[k]);
+  const help = (k) => errors[k] || "";
+
   return (
     <Form
       onSubmit={handleSubmit}
       onReset={() => {}}
-      title={"sign up form"}
-      styles={{ maxWidth: "800px" }}
+      title="sign up form"
+      styles={{ maxWidth: 800 }}
     >
       <TextField
         name="first"
         label="first name"
-        error={errors.first}
+        value={f.first}
         onChange={handleChange}
-        value={formDetails.first}
-        sm={6}
+        error={err("first")}
+        helperText={help("first")}
+        fullWidth
       />
       <TextField
         name="middle"
         label="middle name"
-        error={errors.middle}
+        value={f.middle}
         onChange={handleChange}
-        value={formDetails.middle}
-        sm={6}
-        required={false}
+        error={err("middle")}
+        helperText={help("middle")}
+        fullWidth
       />
       <TextField
         name="last"
         label="last name"
-        error={errors.last}
+        value={f.last}
         onChange={handleChange}
-        value={formDetails.last}
-        sm={6}
+        error={err("last")}
+        helperText={help("last")}
+        fullWidth
       />
       <TextField
         name="phone"
         label="phone"
         type="tel"
-        error={errors.phone}
+        value={f.phone}
         onChange={handleChange}
-        value={formDetails.phone}
-        sm={6}
+        error={err("phone")}
+        helperText={help("phone")}
+        fullWidth
       />
       <TextField
         name="email"
         label="email"
         type="email"
-        error={errors.email}
+        value={f.email}
         onChange={handleChange}
-        value={formDetails.email}
-        sm={6}
+        error={err("email")}
+        helperText={help("email")}
+        fullWidth
       />
       <TextField
         name="password"
         label="password"
         type="password"
-        error={errors.password}
+        value={f.password}
         onChange={handleChange}
-        value={formDetails.password}
-        sm={6}
+        error={err("password")}
+        helperText={help("password")}
+        fullWidth
       />
       <TextField
         name="url"
         label="image url"
-        error={errors.url}
+        value={f.url}
         onChange={handleChange}
-        value={formDetails.url}
-        sm={6}
-        required={false}
+        error={err("url")}
+        helperText={help("url")}
+        fullWidth
       />
       <TextField
         name="alt"
         label="image alt"
-        error={errors.alt}
+        value={f.alt}
         onChange={handleChange}
-        value={formDetails.alt}
-        sm={6}
-        required={false}
+        error={err("alt")}
+        helperText={help("alt")}
+        fullWidth
       />
       <TextField
         name="state"
         label="state"
-        error={errors.state}
+        value={f.state}
         onChange={handleChange}
-        value={formDetails.state}
-        sm={6}
-        required={false}
+        error={err("state")}
+        helperText={help("state")}
+        fullWidth
       />
       <TextField
-        label="country"
         name="country"
-        error={errors.country}
+        label="country"
+        value={f.country}
         onChange={handleChange}
-        value={formDetails.country}
-        sm={6}
+        error={err("country")}
+        helperText={help("country")}
+        fullWidth
       />
       <TextField
         name="city"
         label="city"
-        error={errors.city}
+        value={f.city}
         onChange={handleChange}
-        value={formDetails.city}
-        sm={6}
+        error={err("city")}
+        helperText={help("city")}
+        fullWidth
       />
       <TextField
         name="street"
         label="street"
-        error={errors.street}
+        value={f.street}
         onChange={handleChange}
-        value={formDetails.street}
-        sm={6}
+        error={err("street")}
+        helperText={help("street")}
+        fullWidth
       />
       <TextField
         name="houseNumber"
-        label="house Number"
+        label="house number"
         type="number"
-        error={errors.houseNumber}
+        value={f.houseNumber}
         onChange={handleChange}
-        value={formDetails.houseNumber}
-        sm={6}
+        error={err("houseNumber")}
+        helperText={help("houseNumber")}
+        fullWidth
       />
       <TextField
         name="zip"
         label="zip"
-        error={errors.zip}
+        value={f.zip}
         onChange={handleChange}
-        value={formDetails.zip}
-        sm={6}
-        required={false}
+        error={err("zip")}
+        helperText={help("zip")}
+        fullWidth
       />
     </Form>
   );
 }
-export default RegisterForm;

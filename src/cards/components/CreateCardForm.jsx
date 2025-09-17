@@ -1,17 +1,13 @@
 import { useState } from "react";
-import Grid from "@mui/material/Grid";
-import { Alert, Stack, TextField } from "@mui/material";
-import axios from "axios";
+import { Alert, Box, Stack, TextField } from "@mui/material";
 import Form from "../../components/Form";
 import useForm from "../../hooks/useForm";
 import { useSnack } from "../../providers/SnackbarProvider";
 import { useNavigate, Navigate } from "react-router-dom";
 import { useCurrentUser } from "../../users/providers/UserProvider";
-import { getToken } from "../../users/services/localStorageService";
 import ROUTES from "../../routes/routesDict";
-import cardSchema from "./../models/cardSchema";
-
-const BASE = "https://monkfish-app-z9uza.ondigitalocean.app/bcard2";
+import cardSchema from "../models/cardSchema";
+import { createCard } from "../../users/services/apiClient";
 
 const initialCardForm = {
   title: "",
@@ -31,13 +27,23 @@ const initialCardForm = {
 };
 
 export default function CreateCardForm() {
-  const { user, token } = useCurrentUser();
+  const { user } = useCurrentUser();
   const snack = useSnack();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  if (!user) return <Navigate to={ROUTES.login} replace />;
 
-  const handleCreate = async (v) => {
+  // ✅ Call hooks unconditionally
+  const {
+    formDetails: f,
+    errors,
+    touched,
+    submitted,
+    handleChange,
+    handleBlur,
+    handleSubmit,
+    setErrors,
+    resetForm,
+  } = useForm(initialCardForm, cardSchema, async (v) => {
     const payload = {
       title: v.title,
       subtitle: v.subtitle,
@@ -58,29 +64,18 @@ export default function CreateCardForm() {
     };
     try {
       setLoading(true);
-      await axios.post(`${BASE}/cards`, payload, {
-        headers: { "x-auth-token": token || getToken() },
-      });
+      await createCard(payload);
       snack("A new business card has been created", "success");
       navigate(ROUTES.myCards, { replace: true });
-    } catch {
-      snack("Failed to create card", "error");
+    } catch (e) {
+      snack(e.message || "Failed to create card", "error");
     } finally {
       setLoading(false);
     }
-  };
+  });
 
-  const {
-    formDetails: f,
-    errors,
-    touched,
-    submitted,
-    handleChange,
-    handleBlur,
-    handleSubmit,
-    setErrors,
-    resetForm,
-  } = useForm(initialCardForm, cardSchema, handleCreate);
+  // ✅ Redirect AFTER hooks are called
+  if (!user) return <Navigate to={ROUTES.login} replace />;
 
   const show = (k) => (touched[k] || submitted) && !!errors[k];
   const help = (k, d) => (show(k) ? errors[k] : d);
@@ -98,6 +93,21 @@ export default function CreateCardForm() {
     f.street;
 
   const submitDisabled = !requiredFilled || Object.values(errors).some(Boolean);
+
+  const field = (name, label, tip, required = false, extra = {}) => (
+    <TextField
+      name={name}
+      label={label}
+      value={f[name]}
+      onChange={handleChange}
+      onBlur={handleBlur}
+      error={show(name)}
+      helperText={help(name, tip)}
+      fullWidth
+      required={required}
+      {...extra}
+    />
+  );
 
   return (
     <Form
@@ -119,177 +129,37 @@ export default function CreateCardForm() {
         {(submitted || Object.values(errors).some(Boolean)) && (
           <Alert severity="error">Please fix the highlighted fields.</Alert>
         )}
-        <Grid container spacing={2}>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="title"
-              label="Title"
-              value={f.title}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("title")}
-              helperText={help("title", "2–256 characters")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="subtitle"
-              label="Subtitle"
-              value={f.subtitle}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("subtitle")}
-              helperText={help("subtitle", "2–256 characters")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="phone"
-              label="Phone"
-              value={f.phone}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("phone")}
-              helperText={help("phone", "Israeli: 0 + 8–10 digits")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="email"
-              label="Email"
-              type="email"
-              value={f.email}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("email")}
-              helperText={help("email", "name@example.com")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="web"
-              label="Website"
-              value={f.web}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("web")}
-              helperText={help("web", "https://example.com (optional)")}
-              fullWidth
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="imageUrl"
-              label="Image URL"
-              value={f.imageUrl}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("imageUrl")}
-              helperText={help("imageUrl", "https://…")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="imageAlt"
-              label="Image alt"
-              value={f.imageAlt}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("imageAlt")}
-              helperText={help("imageAlt", "Short description")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="country"
-              label="Country"
-              value={f.country}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("country")}
-              helperText={help("country", "Required")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="city"
-              label="City"
-              value={f.city}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("city")}
-              helperText={help("city", "Required")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="street"
-              label="Street"
-              value={f.street}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("street")}
-              helperText={help("street", "Required")}
-              fullWidth
-              required
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="houseNumber"
-              label="House number"
-              value={f.houseNumber}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("houseNumber")}
-              helperText={help("houseNumber", "Number or text")}
-              fullWidth
-            />
-          </Grid>
-          <Grid size={{ xs: 12, md: 4 }}>
-            <TextField
-              name="zip"
-              label="Zip"
-              value={f.zip}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("zip")}
-              helperText={help("zip", "Number or text")}
-              fullWidth
-            />
-          </Grid>
-          <Grid size={12}>
-            <TextField
-              name="description"
-              label="Description"
-              value={f.description}
-              onChange={handleChange}
-              onBlur={handleBlur}
-              error={show("description")}
-              helperText={help("description", "2–1024 characters")}
-              fullWidth
-              multiline
-              minRows={3}
-              required
-            />
-          </Grid>
-        </Grid>
+
+        <Box
+          sx={{
+            display: "grid",
+            gridTemplateColumns: { xs: "1fr", md: "repeat(3, 1fr)" },
+            gap: 2,
+          }}
+        >
+          {field("title", "Title", "2–256 characters", true)}
+          {field("subtitle", "Subtitle", "2–256 characters", true)}
+          {field("phone", "Phone", "Israeli: 0 + 8–10 digits", true)}
+
+          {field("email", "Email", "name@example.com", true, { type: "email" })}
+          {field("web", "Website", "https://example.com (optional)")}
+          {field("imageUrl", "Image URL", "https://…", true)}
+
+          {field("imageAlt", "Image alt", "Short description", true)}
+          {field("country", "Country", "Required", true)}
+          {field("city", "City", "Required", true)}
+
+          {field("street", "Street", "Required", true)}
+          {field("houseNumber", "House number", "Number or text")}
+          {field("zip", "Zip", "Number or text")}
+
+          <Box sx={{ gridColumn: { xs: "1", md: "1 / -1" } }}>
+            {field("description", "Description", "2–1024 characters", true, {
+              multiline: true,
+              minRows: 3,
+            })}
+          </Box>
+        </Box>
       </Stack>
     </Form>
   );
