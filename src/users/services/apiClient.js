@@ -1,7 +1,8 @@
 import axios from "axios";
 import { getToken } from "./localStorageService";
 
-const baseURL = import.meta.env.VITE_API_BASE || "http://localhost:3000";
+const baseURL =
+  import.meta.env.VITE_API_BASE || "https://cards-server-oxw3.onrender.com";
 export const api = axios.create({ baseURL });
 
 // attach JWT automatically
