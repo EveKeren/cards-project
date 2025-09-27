@@ -1,6 +1,18 @@
 import React, { useState } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { AlertCircle, CheckCircle, Send } from "lucide-react";
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  Typography,
+  Button,
+  Box,
+  Chip,
+  List,
+  ListItem,
+  ListItemIcon,
+  ListItemText,
+} from "@mui/material";
+import { CheckCircle, Error, Sync } from "@mui/icons-material";
 
 export default function ApiDebugTool() {
   const [results, setResults] = useState([]);
@@ -181,63 +193,122 @@ export default function ApiDebugTool() {
   const getStatusIcon = (status) => {
     switch (status) {
       case "success":
-        return <CheckCircle className="h-4 w-4 text-green-600" />;
+        return <CheckCircle sx={{ color: "green" }} />;
       case "error":
-        return <AlertCircle className="h-4 w-4 text-red-600" />;
+        return <Error sx={{ color: "red" }} />;
       case "testing":
-        return <Send className="h-4 w-4 text-blue-600 animate-pulse" />;
+        return <Sync sx={{ color: "blue" }} className="animate-spin" />;
       default:
         return null;
     }
   };
 
+  const getStatusColor = (status) => {
+    switch (status) {
+      case "success":
+        return "success";
+      case "error":
+        return "error";
+      case "testing":
+        return "info";
+      default:
+        return "default";
+    }
+  };
+
   return (
-    <Card className="w-full max-w-2xl mx-auto">
+    <Card sx={{ maxWidth: 800, margin: "auto", mt: 2 }}>
       <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Send className="h-5 w-5" />
-          API Debug Tool
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <button
-          onClick={testServerConnection}
-          disabled={loading}
-          className="w-full px-4 py-2 bg-blue-600 text-white rounded-md hover:bg-blue-700 disabled:opacity-50"
+        <Typography
+          variant="h5"
+          component="h2"
+          sx={{ display: "flex", alignItems: "center", gap: 1 }}
         >
-          {loading ? "Running Tests..." : "Run API Tests"}
-        </button>
+          <Sync />
+          API Debug Tool
+        </Typography>
+      </CardHeader>
+      <CardContent>
+        <Box sx={{ mb: 3 }}>
+          <Button
+            onClick={testServerConnection}
+            disabled={loading}
+            variant="contained"
+            fullWidth
+            sx={{ mb: 2 }}
+          >
+            {loading ? "Running Tests..." : "Run API Tests"}
+          </Button>
+        </Box>
 
         {results.length > 0 && (
-          <div className="space-y-2 max-h-96 overflow-y-auto">
-            <h3 className="font-semibold">Test Results:</h3>
-            {results.map((result, index) => (
-              <div
-                key={index}
-                className="flex items-start gap-2 p-2 border rounded text-sm"
-              >
-                {getStatusIcon(result.status)}
-                <div className="flex-1">
-                  <div className="font-medium">{result.test}</div>
-                  <div className="text-gray-600">{result.details}</div>
-                  <div className="text-xs text-gray-400">
-                    {result.timestamp}
-                  </div>
-                </div>
-              </div>
-            ))}
-          </div>
+          <Box>
+            <Typography variant="h6" gutterBottom>
+              Test Results:
+            </Typography>
+            <List sx={{ maxHeight: 400, overflow: "auto" }}>
+              {results.map((result, index) => (
+                <ListItem
+                  key={index}
+                  sx={{
+                    border: 1,
+                    borderColor: "divider",
+                    borderRadius: 1,
+                    mb: 1,
+                  }}
+                >
+                  <ListItemIcon>{getStatusIcon(result.status)}</ListItemIcon>
+                  <ListItemText
+                    primary={
+                      <Box
+                        sx={{ display: "flex", alignItems: "center", gap: 1 }}
+                      >
+                        <Typography variant="subtitle2">
+                          {result.test}
+                        </Typography>
+                        <Chip
+                          label={result.status}
+                          color={getStatusColor(result.status)}
+                          size="small"
+                        />
+                      </Box>
+                    }
+                    secondary={
+                      <Box>
+                        <Typography variant="body2" color="text.secondary">
+                          {result.details}
+                        </Typography>
+                        <Typography variant="caption" color="text.disabled">
+                          {result.timestamp}
+                        </Typography>
+                      </Box>
+                    }
+                  />
+                </ListItem>
+              ))}
+            </List>
+          </Box>
         )}
 
-        <div className="text-xs text-gray-500">
-          <p>This tool will test:</p>
-          <ul className="list-disc list-inside space-y-1 mt-1">
-            <li>Server connectivity</li>
-            <li>JWT token validity</li>
-            <li>Authenticated requests</li>
-            <li>Card creation endpoint</li>
-          </ul>
-        </div>
+        <Box sx={{ mt: 3, p: 2, bgcolor: "grey.50", borderRadius: 1 }}>
+          <Typography variant="caption" color="text.secondary">
+            This tool will test:
+          </Typography>
+          <Box component="ul" sx={{ mt: 1, pl: 2 }}>
+            <Typography component="li" variant="caption">
+              Server connectivity
+            </Typography>
+            <Typography component="li" variant="caption">
+              JWT token validity
+            </Typography>
+            <Typography component="li" variant="caption">
+              Authenticated requests
+            </Typography>
+            <Typography component="li" variant="caption">
+              Card creation endpoint
+            </Typography>
+          </Box>
+        </Box>
       </CardContent>
     </Card>
   );
