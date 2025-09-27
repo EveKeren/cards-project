@@ -68,9 +68,11 @@ export default function CreateCardForm() {
       snack("A new business card has been created", "success");
       navigate(ROUTES.myCards, { replace: true });
     } catch (e) {
-      snack(e.message || "Failed to create card", "error");
-    } finally {
-      setLoading(false);
+      console.error('Card creation failed:', e);
+      console.error('Response status:', e.response?.status);
+      console.error('Response data:', e.response?.data);
+      const errorMessage = e.response?.data?.message || e.message || "Failed to create card";
+      snack(errorMessage, "error");
     }
   });
 
