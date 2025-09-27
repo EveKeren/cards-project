@@ -1,175 +1,288 @@
-import { TextField } from "@mui/material";
-import { useNavigate } from "react-router-dom";
-import useForm from "../../hooks/useForm";
-import Form from "../../components/Form";
-import signupSchema from "../models/signupSchema";
-import initialSignupForm from "../helpers/initialForms/initialSignupForm";
-import normalizeUser from "../helpers/normalization/normalizeUser";
-import { useSnack } from "../../providers/SnackbarProvider";
-import ROUTES from "../../routes/routesDict";
-import { registerUser } from "./../services/usersApiService";
+import { useState } from "react";
+import {
+  Box,
+  Button,
+  Card,
+  CardContent,
+  Checkbox,
+  FormControlLabel,
+  Grid,
+  TextField,
+  Typography,
+  Alert,
+} from "@mui/material";
 
-export default function RegisterForm() {
-  const snack = useSnack();
-  const navigate = useNavigate();
+export default function TwoColumnRegisterForm() {
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    middleName: "",
+    phone: "",
+    email: "",
+    password: "",
+    imageUrl: "",
+    imageAlt: "",
+    state: "",
+    country: "",
+    city: "",
+    street: "",
+    houseNumber: "",
+    zip: "",
+    isBusiness: false,
+  });
 
-  const handleSignup = async (values) => {
-    try {
-      await registerUser(normalizeUser(values));
-      snack("Account created! Please sign in.", "success");
-      navigate(ROUTES.login, { replace: true });
-    } catch (e) {
-      snack(e.message || "Registration failed", "error");
-    }
+  const [errors, setErrors] = useState({});
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setFormData((prev) => ({
+      ...prev,
+      [name]: type === "checkbox" ? checked : value,
+    }));
   };
 
-  const {
-    formDetails: f,
-    errors,
-    handleChange,
-    handleSubmit,
-  } = useForm(initialSignupForm, signupSchema, handleSignup);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
 
-  const err = (k) => Boolean(errors[k]);
-  const help = (k) => errors[k] || "";
+    // Add your registration logic here
+    console.log("Registration data:", formData);
+
+    // Simulate API call
+    setTimeout(() => {
+      setLoading(false);
+      alert("Registration successful!");
+    }, 1000);
+  };
 
   return (
-    <Form
-      onSubmit={handleSubmit}
-      onReset={() => {}}
-      title="sign up form"
-      styles={{ maxWidth: 800 }}
+    <Box
+      sx={{
+        minHeight: "100vh",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        bgcolor: "grey.100",
+        p: 2,
+      }}
     >
-      <TextField
-        name="first"
-        label="first name"
-        value={f.first}
-        onChange={handleChange}
-        error={err("first")}
-        helperText={help("first")}
-        fullWidth
-      />
-      <TextField
-        name="middle"
-        label="middle name"
-        value={f.middle}
-        onChange={handleChange}
-        error={err("middle")}
-        helperText={help("middle")}
-        fullWidth
-      />
-      <TextField
-        name="last"
-        label="last name"
-        value={f.last}
-        onChange={handleChange}
-        error={err("last")}
-        helperText={help("last")}
-        fullWidth
-      />
-      <TextField
-        name="phone"
-        label="phone"
-        type="tel"
-        value={f.phone}
-        onChange={handleChange}
-        error={err("phone")}
-        helperText={help("phone")}
-        fullWidth
-      />
-      <TextField
-        name="email"
-        label="email"
-        type="email"
-        value={f.email}
-        onChange={handleChange}
-        error={err("email")}
-        helperText={help("email")}
-        fullWidth
-      />
-      <TextField
-        name="password"
-        label="password"
-        type="password"
-        value={f.password}
-        onChange={handleChange}
-        error={err("password")}
-        helperText={help("password")}
-        fullWidth
-      />
-      <TextField
-        name="url"
-        label="image url"
-        value={f.url}
-        onChange={handleChange}
-        error={err("url")}
-        helperText={help("url")}
-        fullWidth
-      />
-      <TextField
-        name="alt"
-        label="image alt"
-        value={f.alt}
-        onChange={handleChange}
-        error={err("alt")}
-        helperText={help("alt")}
-        fullWidth
-      />
-      <TextField
-        name="state"
-        label="state"
-        value={f.state}
-        onChange={handleChange}
-        error={err("state")}
-        helperText={help("state")}
-        fullWidth
-      />
-      <TextField
-        name="country"
-        label="country"
-        value={f.country}
-        onChange={handleChange}
-        error={err("country")}
-        helperText={help("country")}
-        fullWidth
-      />
-      <TextField
-        name="city"
-        label="city"
-        value={f.city}
-        onChange={handleChange}
-        error={err("city")}
-        helperText={help("city")}
-        fullWidth
-      />
-      <TextField
-        name="street"
-        label="street"
-        value={f.street}
-        onChange={handleChange}
-        error={err("street")}
-        helperText={help("street")}
-        fullWidth
-      />
-      <TextField
-        name="houseNumber"
-        label="house number"
-        type="number"
-        value={f.houseNumber}
-        onChange={handleChange}
-        error={err("houseNumber")}
-        helperText={help("houseNumber")}
-        fullWidth
-      />
-      <TextField
-        name="zip"
-        label="zip"
-        value={f.zip}
-        onChange={handleChange}
-        error={err("zip")}
-        helperText={help("zip")}
-        fullWidth
-      />
-    </Form>
+      <Card sx={{ width: "100%", maxWidth: 800 }}>
+        <CardContent sx={{ p: 4 }}>
+          {/* Header */}
+          <Box sx={{ textAlign: "center", mb: 4 }}>
+            <Typography variant="h4" component="h1" gutterBottom>
+              REGISTER
+            </Typography>
+            <Typography color="text.secondary">
+              Create your business card account
+            </Typography>
+          </Box>
+
+          <Box component="form" onSubmit={handleSubmit}>
+            <Grid container spacing={3}>
+              {/* Left Column */}
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <TextField
+                    name="firstName"
+                    label="First name *"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                    error={!!errors.firstName}
+                    helperText={errors.firstName}
+                  />
+
+                  <TextField
+                    name="middleName"
+                    label="Middle name"
+                    value={formData.middleName}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+
+                  <TextField
+                    name="email"
+                    label="Email *"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                    error={!!errors.email}
+                    helperText={errors.email || "Valid email required"}
+                  />
+
+                  <TextField
+                    name="imageUrl"
+                    label="Image URL"
+                    value={formData.imageUrl}
+                    onChange={handleChange}
+                    fullWidth
+                    helperText="Optional profile image URL"
+                  />
+
+                  <TextField
+                    name="state"
+                    label="State"
+                    value={formData.state}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+
+                  <TextField
+                    name="city"
+                    label="City *"
+                    value={formData.city}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                  />
+
+                  <TextField
+                    name="zip"
+                    label="Zip"
+                    value={formData.zip}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+
+              {/* Right Column */}
+              <Grid item xs={12} md={6}>
+                <Box sx={{ display: "flex", flexDirection: "column", gap: 2 }}>
+                  <TextField
+                    name="lastName"
+                    label="Last name *"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                    error={!!errors.lastName}
+                    helperText={errors.lastName}
+                  />
+
+                  <TextField
+                    name="phone"
+                    label="Phone *"
+                    value={formData.phone}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                    helperText="Israeli format: 0 + 8-10 digits"
+                  />
+
+                  <TextField
+                    name="password"
+                    label="Password *"
+                    type="password"
+                    value={formData.password}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                    helperText="Minimum 8 characters, include letters, numbers & symbols"
+                  />
+
+                  <TextField
+                    name="imageAlt"
+                    label="Image alt"
+                    value={formData.imageAlt}
+                    onChange={handleChange}
+                    fullWidth
+                    helperText="Description of the image"
+                  />
+
+                  <TextField
+                    name="country"
+                    label="Country *"
+                    value={formData.country}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                  />
+
+                  <TextField
+                    name="street"
+                    label="Street *"
+                    value={formData.street}
+                    onChange={handleChange}
+                    fullWidth
+                    required
+                  />
+
+                  <TextField
+                    name="houseNumber"
+                    label="House number"
+                    value={formData.houseNumber}
+                    onChange={handleChange}
+                    fullWidth
+                  />
+                </Box>
+              </Grid>
+            </Grid>
+
+            {/* Business Checkbox */}
+            <Box sx={{ mt: 3, mb: 2 }}>
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    name="isBusiness"
+                    checked={formData.isBusiness}
+                    onChange={handleChange}
+                    color="primary"
+                  />
+                }
+                label="Sign up as business"
+              />
+            </Box>
+
+            {/* Submit Button */}
+            <Box
+              sx={{ display: "flex", justifyContent: "center", gap: 2, mt: 3 }}
+            >
+              <Button
+                type="submit"
+                variant="contained"
+                size="large"
+                disabled={loading}
+                sx={{ minWidth: 120 }}
+              >
+                {loading ? "SUBMITTING..." : "SUBMIT"}
+              </Button>
+
+              <Button
+                type="button"
+                variant="outlined"
+                size="large"
+                onClick={() =>
+                  setFormData({
+                    firstName: "",
+                    lastName: "",
+                    middleName: "",
+                    phone: "",
+                    email: "",
+                    password: "",
+                    imageUrl: "",
+                    imageAlt: "",
+                    state: "",
+                    country: "",
+                    city: "",
+                    street: "",
+                    houseNumber: "",
+                    zip: "",
+                    isBusiness: false,
+                  })
+                }
+              >
+                CANCEL
+              </Button>
+            </Box>
+          </Box>
+        </CardContent>
+      </Card>
+    </Box>
   );
 }
