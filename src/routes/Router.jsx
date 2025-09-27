@@ -11,7 +11,6 @@ import SandboxPage from "../pages/SandboxPage";
 import ROUTES from "./routesDict";
 import CreateCardForm from "./../cards/components/CreateCardForm.jsx";
 import EditCardForm from "./../cards/components/EditCardForm";
-import DebugPage from "../pages/Debugpage.jsx";
 export default function Router() {
   return (
     <Routes>
@@ -24,7 +23,6 @@ export default function Router() {
       <Route path={ROUTES.login} element={<LoginPage />} />
       <Route path={ROUTES.register} element={<RegisterPage />} />
       <Route path={ROUTES.sandbox} element={<SandboxPage />} />
-      <Route path={ROUTES.DebugPage} element={<DebugPage />} />
       <Route path="/*" element={<ErrorPage />} />
     </Routes>
   );
