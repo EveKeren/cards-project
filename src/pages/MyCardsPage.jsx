@@ -6,7 +6,7 @@ import { useCurrentUser } from "../users/providers/UserProvider";
 import { getToken } from "../users/services/localStorageService";
 import { useSnack } from "../providers/SnackbarProvider";
 import { useNavigate } from "react-router-dom";
-const BASE = "https://monkfish-app-z9uza.ondigitalocean.app/bcard2";
+const BASE = "https://cards-server-oxw3.onrender.com";
 export default function MyCardsPage() {
   const { token } = useCurrentUser();
   const snack = useSnack();

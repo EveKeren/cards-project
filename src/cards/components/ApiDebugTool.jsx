@@ -104,7 +104,7 @@ export default function ApiDebugTool() {
         );
 
         const response = await fetch(
-          "https://cards-server-oxw3.onrender.com/cards/my-cards",
+          "https://cards-server-oxw3.onrender.com/cards",
           {
             method: "GET",
             headers: {

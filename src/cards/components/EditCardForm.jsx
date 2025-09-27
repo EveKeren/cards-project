@@ -14,7 +14,7 @@ import { useSnack } from "../../providers/SnackbarProvider";
 import { useCurrentUser } from "../../users/providers/UserProvider";
 import { getToken } from "../../users/services/localStorageService";
 
-const BASE = "https://monkfish-app-z9uza.ondigitalocean.app/bcard2";
+const BASE = "https://cards-server-oxw3.onrender.com";
 
 export default function EditCardForm() {
   const { id } = useParams();
