@@ -100,3 +100,11 @@ export async function toggleLike(id) {
     throw new Error(asMessage(e));
   }
 }
+export async function getFavoriteCards() {
+  try {
+    const { data } = await api.get("/cards/favorite-cards");
+    return data;
+  } catch (e) {
+    throw new Error(asMessage(e));
+  }
+}

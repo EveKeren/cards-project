@@ -6,7 +6,7 @@ import { useSnack } from "../providers/SnackbarProvider";
 import { useCurrentUser } from "../users/providers/UserProvider";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import ROUTES from "../routes/routesDict";
-const BASE = "https://monkfish-app-z9uza.ondigitalocean.app/bcard2";
+const BASE = "https://cards-server-oxw3.onrender.com";
 export default function FavoriteCardsPage() {
   const [cards, setCards] = useState([]);
   const snack = useSnack();
